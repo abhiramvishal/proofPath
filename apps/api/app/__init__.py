@@ -1,0 +1,1 @@
+"""ProofPath API application."""

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ProofPath</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        width: 280px;
+        padding: 12px;
+        margin: 0;
+      }
+      h1 { font-size: 14px; margin: 0 0 8px; color: #2563eb; }
+      .status { font-size: 12px; color: #64748b; }
+      .timer { font-size: 24px; font-weight: 600; margin: 8px 0; }
+    </style>
+  </head>
+  <body>
+    <h1>ProofPath Capture</h1>
+    <p class="status" id="sync-status">Sync: idle</p>
+    <p class="timer" id="session-timer">00:00</p>
+    <p class="status">Capturing writing events for authenticity reporting.</p>
+    <script type="module" src="./popup.ts"></script>
+  </body>
+</html>

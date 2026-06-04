@@ -1,0 +1,27 @@
+{
+  "name": "proofpath",
+  "version": "0.1.0",
+  "private": true,
+  "description": "AI-governed writing platform for higher education",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint",
+    "typecheck": "turbo run typecheck",
+    "dev:web": "pnpm --filter @proofpath/web dev",
+    "dev:api": "cd apps/api && uvicorn app.main:app --reload --host 0.0.0.0 --port 8000",
+    "dev:extension": "pnpm --filter @proofpath/extension dev",
+    "db:migrate": "cd apps/api && alembic upgrade head",
+    "db:revision": "cd apps/api && alembic revision --autogenerate -m",
+    "docker:up": "docker compose up -d",
+    "docker:down": "docker compose down"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.0",
+    "typescript": "^5.6.3"
+  },
+  "packageManager": "pnpm@9.14.2",
+  "engines": {
+    "node": ">=20"
+  }
+}

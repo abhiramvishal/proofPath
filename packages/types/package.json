@@ -9,7 +9,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "node init && tsc"
   },
   "devDependencies": {
     "typescript": "^5.6.3"

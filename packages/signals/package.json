@@ -9,7 +9,7 @@
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
-    "build": "tsc"
+    "build": "node init && tsc"
   },
   "dependencies": {
     "@proofpath/types": "workspace:*"

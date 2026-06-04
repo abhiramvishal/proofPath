@@ -42,7 +42,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r requirements.txt
+      - run: pip install -r requirements.txt -r requirements-dev.txt
       - run: alembic upgrade head
         env:
           DATABASE_URL_SYNC: postgresql://proofpath:proofpath@localhost:5432/proofpath

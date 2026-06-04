@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { useActiveStudents } from "@/hooks/use-active-students";
 import { useProofPathUser } from "@/hooks/use-proofpath-user";
 import { getAssignment, getClassDashboard, updateAssignment } from "@/lib/assignments-api";
 import type { TriageLevel } from "@proofpath/types";
@@ -23,6 +24,7 @@ export default function TeacherDashboardPage({
 }) {
   const { getToken } = useAuth();
   const { proofpathUser } = useProofPathUser();
+  const activeStudentIds = useActiveStudents(params.assignmentId);
 
   const assignmentQuery = useQuery({
     queryKey: ["assignment", params.assignmentId],
@@ -42,6 +44,7 @@ export default function TeacherDashboardPage({
       return getClassDashboard(params.assignmentId, token);
     },
     enabled: !!proofpathUser,
+    refetchInterval: 30_000,
   });
 
   const assignment = assignmentQuery.data;
@@ -66,6 +69,11 @@ export default function TeacherDashboardPage({
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
             Status: {assignment?.status ?? "…"}
+            {activeStudentIds.size > 0 && (
+              <span className="ml-2 text-green-600 font-medium">
+                · {activeStudentIds.size} writing now
+              </span>
+            )}
           </p>
         </div>
         {assignment?.status === "draft" && (
@@ -80,27 +88,38 @@ export default function TeacherDashboardPage({
         </p>
       ) : (
         <div className="grid gap-3">
-          {students.map((student) => (
-            <Card key={student.student_id}>
-              <CardHeader className="py-3 flex flex-row items-center justify-between">
-                <CardTitle className="text-base">{student.student_name}</CardTitle>
-                {triageBadge(student.triage as TriageLevel | null)}
-              </CardHeader>
-              <CardContent className="py-0 pb-3 flex justify-between items-center text-sm">
-                <span className="text-muted-foreground">{student.status}</span>
-                {student.submission_id && student.status === "submitted" && (
-                  <Link
-                    href={`/teacher/${params.assignmentId}/report/${student.submission_id}?student=${encodeURIComponent(student.student_name)}&score=${student.authenticity_score ?? ""}`}
-                    className="text-primary hover:underline font-medium"
-                  >
-                    {student.authenticity_score !== null
-                      ? `Score ${student.authenticity_score} — View report`
-                      : "View report"}
-                  </Link>
-                )}
-              </CardContent>
-            </Card>
-          ))}
+          {students.map((student) => {
+            const isActive = activeStudentIds.has(student.student_id);
+            return (
+              <Card key={student.student_id} className={isActive ? "border-green-500/50" : ""}>
+                <CardHeader className="py-3 flex flex-row items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <CardTitle className="text-base">{student.student_name}</CardTitle>
+                    {isActive && (
+                      <span className="inline-flex items-center gap-1 text-xs text-green-600 font-medium">
+                        <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        Writing now
+                      </span>
+                    )}
+                  </div>
+                  {triageBadge(student.triage as TriageLevel | null)}
+                </CardHeader>
+                <CardContent className="py-0 pb-3 flex justify-between items-center text-sm">
+                  <span className="text-muted-foreground">{student.status}</span>
+                  {student.submission_id && student.status === "submitted" && (
+                    <Link
+                      href={`/teacher/${params.assignmentId}/report/${student.submission_id}?student=${encodeURIComponent(student.student_name)}&score=${student.authenticity_score ?? ""}`}
+                      className="text-primary hover:underline font-medium"
+                    >
+                      {student.authenticity_score !== null
+                        ? `Score ${student.authenticity_score} — View report`
+                        : "View report"}
+                    </Link>
+                  )}
+                </CardContent>
+              </Card>
+            );
+          })}
         </div>
       )}
     </div>

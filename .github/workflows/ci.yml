@@ -12,8 +12,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -36,24 +34,28 @@ jobs:
           POSTGRES_DB: proofpath
         ports:
           - 5432:5432
+    defaults:
+      run:
+        working-directory: apps/api
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      - run: pip install -r apps/api/requirements.txt
-      - run: cd apps/api && alembic upgrade head
+      - run: pip install -r requirements.txt -r requirements-dev.txt
+      - run: alembic upgrade head
         env:
           DATABASE_URL_SYNC: postgresql://proofpath:proofpath@localhost:5432/proofpath
       - run: python -c "from app.main import app; print(app.title)"
+      - run: python -m pytest tests/ -v
+        env:
+          DATABASE_URL: postgresql+asyncpg://proofpath:proofpath@localhost:5432/proofpath
 
   extension:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
-        with:
-          version: 9
       - uses: actions/setup-node@v4
         with:
           node-version: "20"

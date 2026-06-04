@@ -7,6 +7,8 @@ import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
+export const dynamic = "force-dynamic";
+
 export const metadata: Metadata = {
   title: "ProofPath",
   description: "AI-governed writing platform for higher education",

@@ -1,5 +1,8 @@
 "use client";
 
+import { useEffect, useRef } from "react";
+import QRCode from "qrcode";
+
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
@@ -15,6 +18,18 @@ function scoreVariant(score: number): "green" | "amber" | "red" {
   return "red";
 }
 
+function QRCodeCanvas({ url }: { url: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  useEffect(() => {
+    if (canvasRef.current) {
+      QRCode.toCanvas(canvasRef.current, url, { width: 96, margin: 1 });
+    }
+  }, [url]);
+
+  return <canvas ref={canvasRef} className="rounded" />;
+}
+
 export function PAIDCertificate({
   paid,
   authenticityScore,
@@ -22,6 +37,7 @@ export function PAIDCertificate({
 }: PAIDCertificateProps) {
   const verifyUrl =
     process.env.NEXT_PUBLIC_VERIFY_URL ?? "http://localhost:3000/verify";
+  const fullVerifyUrl = `${verifyUrl}/${paid}`;
 
   return (
     <Card className="border-primary/30">
@@ -37,11 +53,9 @@ export function PAIDCertificate({
           <Badge variant={scoreVariant(authenticityScore)}>{authenticityScore}/100</Badge>
         </div>
         <p className="text-xs text-muted-foreground break-all">
-          Verify at {verifyUrl}/{paid}
+          Verify at {fullVerifyUrl}
         </p>
-        <div className="w-24 h-24 bg-muted rounded flex items-center justify-center text-xs text-muted-foreground">
-          QR placeholder
-        </div>
+        <QRCodeCanvas url={fullVerifyUrl} />
       </CardContent>
     </Card>
   );

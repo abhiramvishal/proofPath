@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import settings
-from app.routers import ai, assignments, institutions, submissions, users, verify
+from app.routers import ai, assignments, institutions, sessions, submissions, users, verify
 
 
 @asynccontextmanager
@@ -33,6 +33,7 @@ app.include_router(submissions.router)
 app.include_router(ai.router)
 app.include_router(verify.router)
 app.include_router(institutions.router)
+app.include_router(sessions.router)
 
 
 @app.get("/health")

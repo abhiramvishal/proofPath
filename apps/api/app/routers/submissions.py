@@ -21,6 +21,7 @@ from app.services.paid_generator import (
     hash_payload,
     sign_hash,
 )
+from app.services.active_writers import record_activity
 from app.services.report_service import enqueue_report_generation, generate_report_async
 from app.services.signal_extractor import compute_authenticity_score, extract_signals
 
@@ -152,6 +153,20 @@ async def submit_events(
             )
         )
     await db.flush()
+
+    # Broadcast active-writing status to any connected teacher dashboards
+    assignment_result = await db.execute(
+        select(Assignment).where(Assignment.id == submission.assignment_id)
+    )
+    assignment = assignment_result.scalar_one_or_none()
+    if assignment:
+        record_activity(
+            assignment_id=str(submission.assignment_id),
+            student_id=str(db_user.id),
+            student_name=db_user.name or db_user.email,
+            word_count=submission.word_count or 0,
+        )
+
     return {"accepted": len(body.events)}
 
 

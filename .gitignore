@@ -1,52 +1,101 @@
 # Dependencies
+
 node_modules/
+
 .pnpm-store/
 
+
+
 # Build
+
 .next/
+
 dist/
+
 out/
+
 *.tsbuildinfo
 
+
+
 # Python
+
 __pycache__/
+
 *.py[cod]
+
 .venv/
+
 venv/
+
 *.egg-info/
+
 .pytest_cache/
+
 .mypy_cache/
+
 .ruff_cache/
 
+
+
 # Environment
-.env
-.env.local
+
 .env.*.local
+
 !.env.example
 
+
+
 # IDE
+
 .idea/
+
 .vscode/*
+
 !.vscode/extensions.json
 
+
+
 # OS
+
 .DS_Store
+
 Thumbs.db
 
+
+
 # Logs
+
 *.log
+
 npm-debug.log*
 
+
+
 # Terraform
+
 .terraform/
+
 *.tfstate
+
 *.tfstate.*
 
+
+
 # Keys (never commit)
+
 *.pem
+
 private_key*
 
+
+
 # Misc
+
 doc-extract.txt
+
 coverage/
+
 .turbo/
+
+config.bat

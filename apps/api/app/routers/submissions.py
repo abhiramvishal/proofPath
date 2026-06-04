@@ -239,6 +239,35 @@ async def get_report(
     return report
 
 
+@router.get("/{submission_id}/events")
+async def get_submission_events(
+    submission_id: UUID,
+    db: AsyncSession = Depends(get_db),
+    _user=Depends(get_current_user),
+):
+    """Return all events for a submission ordered by sequence (used for process replay)."""
+    result = await db.execute(select(Submission).where(Submission.id == submission_id))
+    if not result.scalar_one_or_none():
+        raise HTTPException(404, "Submission not found")
+
+    events_result = await db.execute(
+        select(Event)
+        .where(Event.submission_id == submission_id)
+        .order_by(Event.sequence)
+    )
+    events = events_result.scalars().all()
+    return [
+        {
+            "type": e.type,
+            "ts": int(e.ts.timestamp() * 1000),
+            "sequence": e.sequence,
+            "session_id": str(e.session_id),
+            "payload": e.payload or {},
+        }
+        for e in events
+    ]
+
+
 @router.post("/{submission_id}/report/generate", response_model=ReportResponse)
 async def trigger_report_generation(
     submission_id: UUID,

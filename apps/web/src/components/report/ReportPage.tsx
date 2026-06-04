@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
 import { useQuery } from "@tanstack/react-query";
 
+import { ProcessReplay } from "@/components/report/ProcessReplay";
 import { ReportViewer } from "@/components/report/ReportViewer";
 import { Button } from "@/components/ui/button";
 import { generateReport, getReport, waitForReport } from "@/lib/reports-api";
@@ -14,6 +15,7 @@ interface ReportPageProps {
   backLabel: string;
   authenticityScore?: number | null;
   studentName?: string;
+  submissionContent?: string | null;
 }
 
 export function ReportPage({
@@ -22,6 +24,7 @@ export function ReportPage({
   backLabel,
   authenticityScore,
   studentName,
+  submissionContent,
 }: ReportPageProps) {
   const { getToken } = useAuth();
 
@@ -86,6 +89,12 @@ export function ReportPage({
           authenticityScore={authenticityScore ?? undefined}
           studentName={studentName}
         />
+        <div className="mt-8">
+          <ProcessReplay
+            submissionId={submissionId}
+            finalContent={submissionContent ?? ""}
+          />
+        </div>
       </main>
     </div>
   );

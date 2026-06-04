@@ -10,6 +10,7 @@ import type { AIPolicyTier } from "@proofpath/types";
 
 import { EditorContext } from "@/contexts/editor-context";
 import { useEventCapture } from "@/hooks/use-event-capture";
+import { useSyncWorker } from "@/hooks/use-sync-worker";
 import { apiFetch } from "@/lib/api";
 import { isPasteBlocked } from "@/lib/ai-policy";
 import { db } from "@/lib/db";
@@ -32,7 +33,7 @@ export function ProofPathEditor({
   onContentChange,
 }: ProofPathEditorProps) {
   const { getToken } = useAuth();
-  const { focusMode } = useEditorStore();
+  const { focusMode, isOffline } = useEditorStore();
   const blockPaste = isPasteBlocked(aiPolicy);
 
   const flushEvents = useCallback(
@@ -82,6 +83,7 @@ export function ProofPathEditor({
   });
 
   const { recordEvent } = useEventCapture(editor, flushEvents, { blockPaste });
+  useSyncWorker(submissionId);
 
   useEffect(() => {
     if (editor && initialContent && editor.isEmpty) {
@@ -105,7 +107,9 @@ export function ProofPathEditor({
         />
         <div className="mt-2 text-sm text-muted-foreground flex justify-between">
           <span>{wordCount} words</span>
-          <span className="text-xs">Autosaved locally</span>
+          <span className="text-xs">
+            {isOffline ? "⚠ Offline — saving locally" : "Autosaved"}
+          </span>
         </div>
       </div>
     </EditorContext.Provider>
